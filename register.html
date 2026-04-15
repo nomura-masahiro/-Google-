@@ -93,9 +93,8 @@
     </div>
 
 <div class="form-group">
-  <label for="maker">対応メーカー</label>
-  <select id="maker">
-    <option value="">選択してください</option>
+  <label for="maker">対応メーカー（複数選択可）</label>
+  <select id="maker" multiple size="5">
     <option value="トヨタ">トヨタ</option>
     <option value="日産">日産</option>
     <option value="ホンダ">ホンダ</option>
@@ -105,7 +104,8 @@
     <option value="ダイハツ">ダイハツ</option>
     <option value="その他">その他</option>
   </select>
-  </div>
+  <small>Ctrl（Macは⌘）キーを押しながら選択</small>
+</div>
 
     <div class="form-group">
       <label for="carType">対応車種</label>
@@ -113,9 +113,8 @@
     </div>
 
 <div class="form-group">
-  <label for="license">資格</label>
-  <select id="license">
-    <option value="">選択してください</option>
+  <label for="license">資格（複数選択可）</label>
+  <select id="license" multiple size="4">
     <option value="1級整備士">1級整備士</option>
     <option value="2級整備士">2級整備士</option>
     <option value="3級整備士">3級整備士</option>
@@ -141,7 +140,39 @@
 </div>
 
 <script>
-  // いままで作った submit + GAS 連携の JS をここに置く
+/* 複数選択された値をカンマ区切りで取得 */
+function getMultiSelectValues(selectId) {
+  return Array.from(
+    document.getElementById(selectId).selectedOptions
+  ).map(option => option.value).join(",");
+}
+
+const GAS_URL = "ここに doPost 用の GAS_URL を入れる";
+
+document.getElementById("skillForm").addEventListener("submit", function(e) {
+  e.preventDefault(); // ページ遷移を防ぐ
+
+  const data = {
+    name: document.getElementById("name").value,
+    maker: getMultiSelectValues("maker"),      // 複数選択
+    carType: document.getElementById("carType").value,
+    license: getMultiSelectValues("license"),  // 複数選択
+    experience: document.getElementById("experience").value,
+    contact: document.getElementById("contact").value
+  };
+
+  fetch(GAS_URL, {
+    method: "POST",
+    body: JSON.stringify(data)
+  })
+  .then(() => {
+    alert("登録が完了しました");
+    document.getElementById("skillForm").reset();
+  })
+  .catch(() => {
+    alert("登録に失敗しました");
+  });
+});
 </script>
 
 </body>
