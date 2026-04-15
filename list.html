@@ -32,35 +32,27 @@
       <th>連絡先</th>
     </tr>
   </thead>
-  <tbody>
-    <!-- ここにデータが入る -->
-  </tbody>
+  <tbody></tbody>
 </table>
 
 <script>
-const SHEET_ID = "1CWrA5XUGwnJr9mrTBcK0KflrD267Ph7u0vwlrwHFQ88";
-const API_KEY  = "ここにGoogle APIキー";
-const RANGE = "skills!A2:G";
+const GAS_URL = "https://script.google.com/macros/s/XXXX/exec"; // ←あなたのURL
 
-const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`;
-
-fetch(url)
+fetch(GAS_URL)
   .then(res => res.json())
   .then(data => {
     const tbody = document.querySelector("#listTable tbody");
 
-    data.values.forEach(row => {
+    data.forEach(item => {
       const tr = document.createElement("tr");
-
       tr.innerHTML = `
-        <td>${row[1] || ""}</td>
-        <td>${row[2] || ""}</td>
-        <td>${row[3] || ""}</td>
-        <td>${row[4] || ""}</td>
-        <td>${row[5] || ""}</td>
-        <td>${row[6] || ""}</td>
+        <td>${item.name || ""}</td>
+        <td>${item.maker || ""}</td>
+        <td>${item.carType || ""}</td>
+        <td>${item.license || ""}</td>
+        <td>${item.experience || ""}</td>
+        <td>${item.contact || ""}</td>
       `;
-
       tbody.appendChild(tr);
     });
   })
@@ -70,3 +62,4 @@ fetch(url)
 </script>
 
 </body>
+</html>
