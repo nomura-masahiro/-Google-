@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>整備士一覧</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+
+<h1>整備士一覧</h1>
+
+<table id="listTable">
+  <thead>
+    <tr>
+      <th>名前</th>
+      <th>対応メーカー</th>
+      <th>対応車種</th>
+      <th>資格</th>
+      <th>経験年数</th>
+      <th>連絡先</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- ここにデータが入る -->
+  </tbody>
+</table>
+
+<script>
+const SHEET_ID = "ここにスプレッドシートID";
+const API_KEY  = "ここにGoogle APIキー";
+const RANGE = "skills!A2:G";
+
+const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`;
+
+fetch(url)
+  .then(res => res.json())
+  .then(data => {
+    const tbody = document.querySelector("#listTable tbody");
+
+    data.values.forEach(row => {
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>${row[1] || ""}</td>
+        <td>${row[2] || ""}</td>
+        <td>${row[3] || ""}</td>
+        <td>${row[4] || ""}</td>
+        <td>${row[5] || ""}</td>
+        <td>${row[6] || ""}</td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+  })
+  .catch(() => {
+    alert("一覧データの取得に失敗しました");
+  });
+</script>
+
+</body>
