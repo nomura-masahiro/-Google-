@@ -253,6 +253,30 @@ document.addEventListener("DOMContentLoaded", function () {
   const GAS_URL =
     "https://script.google.com/macros/s/AKfycbzsq6z295DQwLoei5M_EfbDtW2NExWsVvwGTKIE6MgcAXYhRsxmDLvN4I47hlrzyXKp/exec";
 
+
+  // ✅ 編集モード判定（ここが最初の一歩）
+  const params = new URLSearchParams(location.search);
+  const editId = params.get("id");
+  
+  if (editId) {
+    fetch(`${GAS_URL}?id=${editId}`)
+      .then(res => res.json())
+      .then(data => {
+        // フォームにデータをセット
+        document.getElementById("name").value = data.name;
+        document.getElementById("carType").value = data.carType || "";
+        document.getElementById("experience").value = data.experience;
+        document.getElementById("phone").value = data.phone;
+        document.getElementById("email").value = data.email;
+
+        setCheckedValues("maker", data.maker);
+        setCheckedValues("license", data.license);
+
+        // ボタン表示を変更（任意）
+        document.getElementById("submitBtn").textContent = "更新";
+      });
+  }
+
   function getCheckedValues(name) {
     return Array.from(
       document.querySelectorAll(`input[name="${name}"]:checked`)
@@ -332,6 +356,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const data = {
+      mode: editId ? "update" : "create", // ★ここが編集モードの鍵
+      id: editId,                         // ★編集対象ID（新規時は null）
+
       name,
       maker,
       carType,
@@ -341,10 +368,6 @@ document.addEventListener("DOMContentLoaded", function () {
       email
     };
 
-    fetch(GAS_URL, {
-      method: "POST",
-      body: JSON.stringify(data)
-    })
       .then(() => {
         alert("登録が完了しました");
         form.reset();
@@ -354,6 +377,17 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   });
 });
+
+  // チェックボックスを復元する関数
+  function setCheckedValues(name, csv) {
+    if (!csv) return;
+    const values = csv.split(",");
+    document
+      .querySelectorAll(`input[name="${name}"]`)
+      .forEach(cb => {
+        cb.checked = values.includes(cb.value);
+      });
+  }
 </script>
 
 </body>
