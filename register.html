@@ -300,8 +300,13 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    if (!phone || !email) {
-      alert("電話番号とメールアドレスは必須です");
+    if (!phone) {
+      alert("電話番号は必須です");
+      return;
+    }
+
+    if (!email) {
+      alert("メールアドレスは必須です");
       return;
     }
     
