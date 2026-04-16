@@ -316,13 +316,6 @@ document.getElementById("skillForm").addEventListener("submit", function(e) {
 });
 </script>
 
-function getCheckedValues(name) {
-  return Array.from(
-    document.querySelectorAll(`input[name="${name}"]:checked`)
-  ).map(cb => cb.value).join(",");
-}
-
-</script>
 
 </body>
 </html>
