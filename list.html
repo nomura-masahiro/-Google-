@@ -17,7 +17,19 @@
     }
   </style>
 </head>
+
+
 <body>
+<div id="authArea">
+  <h2>整備士一覧（パスワードが必要です）</h2>
+  <input type="password" id="listPassword" placeholder="パスワード">
+  <button onclick="checkPassword()">表示</button>
+  <p id="authError" style="color:red;"></p>
+</div>
+
+<div id="listArea" style="display:none;">
+  <!-- 既存の一覧テーブルはここに移動 -->
+</div>
 
 <h1>整備士一覧</h1>
 
@@ -40,38 +52,59 @@
 <script>
 const GAS_URL = "https://script.google.com/macros/s/AKfycbzsq6z295DQwLoei5M_EfbDtW2NExWsVvwGTKIE6MgcAXYhRsxmDLvN4I47hlrzyXKp/exec"; // ←あなたのURL
 
-fetch(GAS_URL)
-  .then(res => res.json())
-  .then(data => {
-    const tbody = document.querySelector("#listTable tbody");
+function loadList() {
+  fetch(GAS_URL)
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.querySelector("#listTable tbody");
+      tbody.innerHTML = "";
 
-    data.forEach(item => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${item.name}</td>
-        <td>${item.maker}</td>
-        <td>${item.carType}</td>
-        <td>${item.license}</td>
-        <td>${item.experience ?? ""}</td>
-        <td>${item.phone}</td>
-        <td>
-          <a href="mailto:${item.email}">
-            ${item.email}
-          </a>
-        </td>
-        <td>
-          <button onclick="editSkill('${item.id}')">編集</button>
-        </td>
-      `;
-      tbody.appendChild(tr);
+      data.forEach(item => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${item.name}</td>
+          <td>${item.maker}</td>
+          <td>${item.carType}</td>
+          <td>${item.license}</td>
+          <td>${item.experience ?? ""}</td>
+          <td>${item.phone}</td>
+          <td>
+            mailto:${item.email}${item.email}</a>
+          </td>
+          <td>
+            <button onclick="editSkill('${item.id}')">編集</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
     });
-  })
-  .catch(() => {
-    alert("一覧データの取得に失敗しました");
-  });
+}
 
 function editSkill(id) {
   location.href = `register.html?id=${id}`;
+}
+
+function checkPassword() {
+  const password = document.getElementById("listPassword").value;
+
+  fetch(GAS_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      mode: "authList",
+      password: password
+    })
+  })
+  .then(res => res.json())
+  .then(result => {
+    if (result.ok) {
+      document.getElementById("authArea").style.display = "none";
+      document.getElementById("listArea").style.display = "block";
+      loadList();  // ← 一覧取得処理を呼ぶ
+    } else {
+      document.getElementById("authError").textContent =
+        "パスワードが違います";
+    }
+  });
 }
 
 </script>
