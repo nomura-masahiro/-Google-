@@ -222,37 +222,85 @@
       <input type="number" id="experience">
     </div>
 
-    <div class="form-group">
-      <label for="contact">連絡先</label>
-      <input type="email" id="contact">
-    </div>
+<div class="form-group">
+  <label for="phone">電話番号 <span style="color:red">*</span></label>
+  <input type="tel" id="phone" placeholder="09012345678">
+</div>
+
+<div class="form-group">
+  <label for="email">メールアドレス <span style="color:red">*</span></label>
+  <input type="email" id="email" placeholder="example@example.com">
+</div>
+
 
     <button type="submit" id="submitBtn">登録</button>
   </form>
 
 </div>
 
+
 <script>
-/* 複数選択された値をカンマ区切りで取得 */
-function getMultiSelectValues(selectId) {
+function getCheckedValues(name) {
   return Array.from(
-    document.getElementById(selectId).selectedOptions
-  ).map(option => option.value).join(",");
+    document.querySelectorAll(`input[name="${name}"]:checked`)
+  ).map(cb => cb.value).join(",");
 }
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzsq6z295DQwLoei5M_EfbDtW2NExWsVvwGTKIE6MgcAXYhRsxmDLvN4I47hlrzyXKp/exec"; // ←あなたのURL
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzsq6z295DQwLoei5M_EfbDtW2NExWsVvwGTKIE6MgcAXYhRsxmDLvN4I47hlrzyXKp/exec";
 
 document.getElementById("skillForm").addEventListener("submit", function(e) {
-  e.preventDefault(); // ページ遷移を防ぐ
+  e.preventDefault();
 
-const data = {
-  name: document.getElementById("name").value,
-  maker: getCheckedValues("maker"),      // ★チェックボックス
-  carType: document.getElementById("carType").value,
-  license: getCheckedValues("license"),  // ★チェックボックス
-  experience: document.getElementById("experience").value,
-  contact: document.getElementById("contact").value
-};
+  const name = document.getElementById("name").value.trim();
+  const maker = getCheckedValues("maker");
+  const carType = document.getElementById("carType").value.trim();
+  const license = getCheckedValues("license");
+  const experience = document.getElementById("experience").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const email = document.getElementById("email").value.trim();
+
+  /* ===== 入力チェック ===== */
+
+  // 必須チェック
+  if (!name || !maker || !license || !experience || !phone || !email) {
+    alert("必須項目が未入力です");
+    return;
+  }
+
+  // 名前の文字数
+  if (name.length > 30) {
+    alert("名前は30文字以内で入力してください");
+    return;
+  }
+
+  // 経験年数（数字・範囲）
+  if (!/^\d+$/.test(experience) || experience > 99) {
+    alert("経験年数は0〜99の数字で入力してください");
+    return;
+  }
+
+  // 電話番号（10〜11桁）
+  if (!/^\d{10,11}$/.test(phone)) {
+    alert("電話番号は10〜11桁の数字で入力してください");
+    return;
+  }
+
+  // メール形式チェック
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert("メールアドレスの形式が正しくありません");
+    return;
+  }
+
+  /* ===== データ送信 ===== */
+  const data = {
+    name,
+    maker,
+    carType,
+    license,
+    experience,
+    phone,
+    email
+  };
 
   fetch(GAS_URL, {
     method: "POST",
@@ -266,6 +314,7 @@ const data = {
     alert("登録に失敗しました");
   });
 });
+</script>
 
 function getCheckedValues(name) {
   return Array.from(
