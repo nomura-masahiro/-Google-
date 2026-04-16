@@ -94,12 +94,12 @@ function checkPassword() {
       password: password
     })
   })
-  .then(res => res.json())
+  .then(res => res.text())
   .then(result => {
-    if (result.ok) {
+    if (result === "OK") {
       document.getElementById("authArea").style.display = "none";
       document.getElementById("listArea").style.display = "block";
-      loadList();  // ← 一覧取得処理を呼ぶ
+      loadList();
     } else {
       document.getElementById("authError").textContent =
         "パスワードが違います";
