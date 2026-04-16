@@ -51,7 +51,7 @@ fetch(GAS_URL)
         <td>${item.maker || ""}</td>
         <td>${item.carType || ""}</td>
         <td>${item.license || ""}</td>
-        <td>${item.experience || ""}</td>
+        <td>${item.experience !== undefined && item.experience !== null ? item.experience : ""}</td>
         <td>${item.phone}</td>
         <td>${item.email}</td>
 
