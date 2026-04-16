@@ -89,6 +89,25 @@
   cursor: pointer;
 }
 
+.checkbox-group {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 20px;
+  margin-top: 8px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;   /* ← 縦位置を中央揃え */
+  gap: 8px;              /* ← □と文字の間隔 */
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.checkbox-item input[type="checkbox"] {
+  margin: 0;             /* ← ブラウザ標準のズレ防止 */
+}
+
   </style>
 </head>
 <body>
