@@ -240,78 +240,85 @@
 
 
 <script>
-function getCheckedValues(name) {
-  return Array.from(
-    document.querySelectorAll(`input[name="${name}"]:checked`)
-  ).map(cb => cb.value).join(",");
-}
+document.addEventListener("DOMContentLoaded", function () {
 
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzsq6z295DQwLoei5M_EfbDtW2NExWsVvwGTKIE6MgcAXYhRsxmDLvN4I47hlrzyXKp/exec";
+  const GAS_URL =
+    "https://script.google.com/macros/s/AKfycbzsq6z295DQwLoei5M_EfbDtW2NExWsVvwGTKIE6MgcAXYhRsxmDLvN4I47hlrzyXKp/exec";
 
-document.getElementById("skillForm").addEventListener("submit", function(e) {
-  e.preventDefault();
+  function getCheckedValues(name) {
+    return Array.from(
+      document.querySelectorAll(`input[name="${name}"]:checked`)
+    )
+      .map(cb => cb.value)
+      .join(",");
+  }
 
-  const name = document.getElementById("name").value.trim();
-  const maker = getCheckedValues("maker");
-  const carType = document.getElementById("carType").value.trim();
-  const license = getCheckedValues("license");
-  const experience = document.getElementById("experience").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-  const email = document.getElementById("email").value.trim();
+  const form = document.getElementById("skillForm");
 
-  /* ===== 入力チェック ===== */
-
-  // 必須チェック
-  if (!name || !maker || !license || !experience || !phone || !email) {
-    alert("必須項目が未入力です");
+  if (!form) {
+    console.error("フォーム #skillForm が見つかりません");
     return;
   }
 
-  // 名前の文字数
-  if (name.length > 30) {
-    alert("名前は30文字以内で入力してください");
-    return;
-  }
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
 
-  // 経験年数（数字・範囲）
-  if (!/^\d+$/.test(experience) || experience > 99) {
-    alert("経験年数は0〜99の数字で入力してください");
-    return;
-  }
+    const name = document.getElementById("name").value.trim();
+    const maker = getCheckedValues("maker");
+    const carType = document.getElementById("carType")?.value.trim() || "";
+    const license = getCheckedValues("license");
+    const experience = document.getElementById("experience").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const email = document.getElementById("email").value.trim();
 
-  // 電話番号（10〜11桁）
-  if (!/^\d{10,11}$/.test(phone)) {
-    alert("電話番号は10〜11桁の数字で入力してください");
-    return;
-  }
+    /* ===== 入力チェック ===== */
 
-  // メール形式チェック
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    alert("メールアドレスの形式が正しくありません");
-    return;
-  }
+    if (!name || !maker || !license || !experience || !phone || !email) {
+      alert("必須項目が未入力です");
+      return;
+    }
 
-  /* ===== データ送信 ===== */
-  const data = {
-    name,
-    maker,
-    carType,
-    license,
-    experience,
-    phone,
-    email
-  };
+    if (name.length > 30) {
+      alert("名前は30文字以内で入力してください");
+      return;
+    }
 
-  fetch(GAS_URL, {
-    method: "POST",
-    body: JSON.stringify(data)
-  })
-  .then(() => {
-    alert("登録が完了しました");
-    document.getElementById("skillForm").reset();
-  })
-  .catch(() => {
-    alert("登録に失敗しました");
+    if (!/^\d+$/.test(experience) || experience > 99) {
+      alert("経験年数は0〜99の数字で入力してください");
+      return;
+    }
+
+    if (!/^\d{10,11}$/.test(phone)) {
+      alert("電話番号は10〜11桁の数字で入力してください");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      alert("メールアドレスの形式が正しくありません");
+      return;
+    }
+
+    const data = {
+      name,
+      maker,
+      carType,
+      license,
+      experience,
+      phone,
+      email
+    };
+
+    fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify(data)
+    })
+      .then(() => {
+        alert("登録が完了しました");
+        form.reset();
+      })
+      .catch(() => {
+        alert("登録に失敗しました");
+      });
   });
 });
 </script>
