@@ -8,72 +8,62 @@
 
 <h2>ログイン</h2>
 
-<div>
-  <input type="email" id="loginEmail" placeholder="メールアドレス">
-</div>
+<input type="email" id="loginEmail" placeholder="メールアドレス"><br>
+<input type="password" id="loginPassword" placeholder="パスワード"><br><br>
 
-<div>
-  <input type="password" id="loginPassword" placeholder="パスワード">
-</div>
+<button type="button" id="loginBtn">ログイン</button><br><br>
 
-<br>
+<button type="button" id="signupBtn">新規ユーザー登録</button>
 
-<!-- onclick は使わない -->
-<button type="button" id="loginBtn">ログイン</button>
-
-<br><br>
-
-<button type="button" onclick="location.href='signup.html'p id="error" style="color:red;"></p>
+<p id="error" style="color:red;"></p>
 
 <script>
 const GAS_URL =
   "https://script.google.com/macros/s/AKfycbzsq6z295DQwLoei5M_EfbDtW2NExWsVvwGTKIE6MgcAXYhRsxmDLvN4I47hlrzyXKp/exec";
 
-document.addEventListener("DOMContentLoaded", () => {
+document.getElementById("signupBtn").addEventListener("click", () => {
+  location.href = "signup.html";
+});
 
-  const loginBtn = document.getElementById("loginBtn");
+document.getElementById("loginBtn").addEventListener("click", () => {
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value.trim();
   const error = document.getElementById("error");
 
-  loginBtn.addEventListener("click", () => {
-    const email = document.getElementById("loginEmail").value.trim();
-    const password = document.getElementById("loginPassword").value.trim();
+  error.textContent = "";
 
-    error.textContent = "";
+  if (!email || !password) {
+    error.textContent = "メールアドレスとパスワードを入力してください";
+    return;
+  }
 
-    if (!email || !password) {
-      error.textContent = "メールアドレスとパスワードを入力してください";
+  fetch(GAS_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      mode: "login",
+      email,
+      password
+    })
+  })
+  .then(res => res.json())
+  .then(result => {
+    if (!result.ok) {
+      error.textContent = "ログインIDまたはパスワードが違います";
       return;
     }
 
-    fetch(GAS_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        mode: "login",
-        email: email,
-        password: password
-      })
-    })
-    .then(res => res.json())
-    .then(result => {
-      if (!result.ok) {
-        error.textContent = "ログインIDまたはパスワードが違います";
-        return;
-      }
-
-      // 🔽 ログイン後の分岐
-      if (result.skillId) {
-        location.href = `register.html?id=${result.skillId}`;
-      } else {
-        location.href = "register.html";
-      }
-    })
-    .catch(() => {
-      error.textContent = "通信エラーが発生しました";
-    });
+    if (result.skillId) {
+      location.href = `register.html?id=${result.skillId}`;
+    } else {
+      location.href = "register.html";
+    }
+  })
+  .catch(() => {
+    error.textContent = "通信エラーが発生しました";
   });
-
 });
 </script>
 
 </body>
 </html>
+``
