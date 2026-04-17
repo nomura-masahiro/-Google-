@@ -356,8 +356,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const data = {
-      mode: editId ? "update" : "create", // ★ここが編集モードの鍵
-      id: editId,                         // ★編集対象ID（新規時は null）
+      mode: editId ? "update" : "create", // 新規 or 更新
+      id: editId,
 
       name,
       maker,
@@ -368,13 +368,28 @@ document.addEventListener("DOMContentLoaded", function () {
       email
     };
 
-      .then(() => {
+    fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify(data)
+    })
+    .then(res => res.text())
+    .then(result => {
+      if (result === "DUPLICATE_EMAIL") {
+        alert("このメールアドレスはすでに登録されています。");
+        return;
+      }
+
+      if (editId) {
+        alert("更新しました");
+        location.href = "list.html";
+      } else {
         alert("登録が完了しました");
         form.reset();
-      })
-      .catch(() => {
-        alert("登録に失敗しました");
-      });
+      }
+    })
+    .catch(() => {
+      alert("登録に失敗しました");
+    });
   });
 });
 
