@@ -10,15 +10,67 @@
 
 <p>ログイン用のメールアドレスとパスワードを設定してください。</p>
 
-<input type="email" id="signupEmail" placeholder="メールアドレス">
-<br>
-<input type="password" id="signupPassword" placeholder="パスワード（8文字以上）">
-<br><br>
+<input type="email" id="signupEmail" placeholder="メールアドレス"><br>
+<input type="password" id="signupPassword" placeholder="パスワード（8文字以上）"><br><br>
 
-<button onclick="signup()">登録</button>
-
+<button type="button" id="signupBtn">登録</button>
 <br><br>
-<button onclick="location.href='login.html'e" style="color:red;"></p>
+<button type="button" id="backBtn">ログイン画面へ戻る</button>
+
+<p id="message" style="color:red;"></p>
 
 <script>
 const GAS_URL =
+  "https://script.google.com/macros/s/AKfycbzsq6z295DQwLoei5M_EfbDtW2NExWsVvwGTKIE6MgcAXYhRsxmDLvN4I47hlrzyXKp/exec";
+
+document.getElementById("backBtn").addEventListener("click", () => {
+  location.href = "login.html";
+});
+
+document.getElementById("signupBtn").addEventListener("click", () => {
+  const email = document.getElementById("signupEmail").value.trim();
+  const password = document.getElementById("signupPassword").value.trim();
+  const message = document.getElementById("message");
+
+  message.textContent = "";
+
+  if (!email || !password) {
+    message.textContent = "メールアドレスとパスワードを入力してください";
+    return;
+  }
+
+  if (password.length < 8) {
+    message.textContent = "パスワードは8文字以上にしてください";
+    return;
+  }
+
+  fetch(GAS_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      mode: "signup",
+      email,
+      password
+    })
+  })
+  .then(res => res.text())
+  .then(result => {
+    if (result === "DUPLICATE_USER") {
+      message.textContent = "このメールアドレスはすでに登録されています";
+      return;
+    }
+
+    if (result === "OK") {
+      alert("ユーザー登録が完了しました。ログインしてください。");
+      location.href = "login.html";
+    } else {
+      message.textContent = "登録に失敗しました";
+    }
+  })
+  .catch(() => {
+    message.textContent = "通信エラーが発生しました";
+  });
+});
+</script>
+
+</body>
+</html>
